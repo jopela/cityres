@@ -40,7 +40,12 @@ def main():
 
 
     uri_res = uri(args.search, args.endpoint)
-    print(uri_res)
+    if any(uri_res):
+        print(uri_res)
+    else:
+        sys.stderr.write("could not find any resource for {0}\n".format(
+            args.search))
+        exit(-1)
 
     return
 
@@ -53,7 +58,7 @@ def uri(search,endpoint):
     PREFIX dbowl: <http://dbpedia.org/ontology/>
     PREFIX dbgeo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
 
-    select ?uri where {{
+    select distinct ?uri where {{
         ?uri a dbowl:City .
         ?uri dbgeo:lat ?lat .
         ?uri dbgeo:long ?long .
@@ -68,8 +73,13 @@ def uri(search,endpoint):
     shell_template = 's-query --service {0} --output=csv "{1}"'
     shell_instance = shell_template.format(endpoint,query_instance)
 
-    shell_result = subprocess.check_output(shell_instance, shell=True,
+    shell_result_raw = subprocess.check_output(shell_instance, shell=True,
             universal_newlines=True)
+
+    shell_lines = shell_result_raw.split("\n")[1:]
+    lines = [l for l in shell_lines if l != '']
+    shell_result = "\n".join(lines)
+
     return shell_result
 
 
