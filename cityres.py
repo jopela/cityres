@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import subprocess
 import sys
 
 def main():
@@ -64,11 +65,14 @@ def uri(search,endpoint):
 
     query_instance = query_template.format(south, north, west, east)
 
-    shell_template = 's-query --service {0} --output=CSV "{1}"'
-
+    shell_template = 's-query --service {0} --output=csv "{1}"'
     shell_instance = shell_template.format(endpoint,query_instance)
 
-    return shell_instance
+    shell_result = subprocess.check_output(shell_instance, shell=True,
+            universal_newlines=True)
+    return shell_result
+
+
 
 def unpack_search(search):
     """ returns the individual component of a search string in a tuple.
