@@ -3,6 +3,7 @@
 import argparse
 import subprocess
 import sys
+import strdist
 import pylev
 
 def main():
@@ -21,9 +22,9 @@ def main():
             '-e',
             '--endpoint',
             help='location of the SPARQL endpoint used for the query.'\
-            'Defaults to http://192.168.1.202:3030/dbart/query which is the'\
+            'Defaults to http://192.168.1.202:8890/sparql which is the'\
             'mtrip default rdf store.',
-            default='http://192.168.1.202:3030/dbart/query'
+            default='http://192.168.1.202:8890/sparql'
             )
 
     parser.add_argument(
@@ -53,19 +54,25 @@ def main():
         print(query)
         exit(0)
 
-    print("fetching uri")
-    uri_res = uri(args.search, args.endpoint)
-    print("done")
-    if any(uri_res):
-        (city,_,_,_,_) = unpack_search(args.search)
-        choosen = choose_best(city, uri_res)
-        print(choosen)
-    else:
-        sys.stderr.write("could not find any resource for {0}\n".format(
-            args.search))
-        exit(-1)
+
+    resource = cityres(args.search, args.endpoint)
+    print(resource)
 
     return
+
+def cityres(search, endpoint):
+    """ return the single best city resource match found in the
+    http://dbpedia.org/ graph based on geolocation and city name. If no
+    uri resource is found, will return none."""
+
+    possible_uris = uri(search, endpoint)
+    if len(possible_uris) == 0:
+        return None
+
+    (city,_,_,_,_) = unpack_search(search)
+    choosen = choose_best(city, possible_uris)
+
+    return choosen
 
 def choose_best(city, uris):
     """
@@ -79,17 +86,41 @@ def choose_best(city, uris):
     >>> choose_best('Montreal',['http://dbpedia.org/resource/Mountreal','http://dbpedia.org/resource/Moscow','http://dbpedia.org/resource/Montreal'])
     'http://dbpedia.org/resource/Montreal'
 
+    >>> choose_best('New York',['http://dbpedia.org/resource/New_York_City','http://dbpedia.org/Harlem'])
+    'http://dbpedia.org/resource/New_York_City'
+
     """
 
-    # compute the levenshtein distance between all string and city
-    distances = [(pylev.levenshtein(city, uri), uri) for uri in uris]
+    # strategy is to use the longest common subsequence first and
+    # take the the string that has the uri that has the longest one.
+    # If there are ties, break the tie by computing the levenshtein and
+    # taking the uri that has the smallest.
 
-    # sort them by best distances
+    # this creates a kind of band-pass filter, so to speak.
+
+    distances = [(strdist.longest_sub_len(city, uri), uri) for uri in uris]
+
+    # sort them by sub sequence length
     distances.sort()
 
-    # return the uri of the first one
-    result = distances[0][1]
+    result_subseq_length = distances[-1][0]
+
+    #print("distances",distances)
+
+    ties = [e for e in distances if e[0] == result_subseq_length]
+
+    #print("ties")
+
+    # break the tie with the levenshtein distance.
+    if len(ties) > 1:
+        tie_distances = [(pylev.levenshtein(city, t[1]),t[1]) for t in ties]
+        tie_distances.sort()
+        result = tie_distances[0][1]
+    else:
+        result = distances[-1][1]
+
     return result
+
 
 def uri(search,endpoint):
     """
@@ -123,7 +154,7 @@ def query_string(search):
         ?uri a dbowl:City .
         ?uri dbgeo:lat ?lat .
         ?uri dbgeo:long ?long .
-        FILTER (?lat > {0} && ?lat < {1} && ?long > {2} && ?long < {3})
+        FILTER (?lat < {0} && ?long > {1} && ?lat > {2} && ?long < {3})
     }}
     """
 
