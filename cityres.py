@@ -151,9 +151,18 @@ def query_string(search):
     PREFIX dbgeo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
 
     select distinct ?uri where {{
+    {{
         ?uri a dbowl:City .
         ?uri dbgeo:lat ?lat .
         ?uri dbgeo:long ?long .
+    }}
+    UNION
+    {{
+        ?uri a dbowl:Town .
+        ?uri dbgeo:lat ?lat .
+        ?uri dbgeo:long ?long .
+
+    }}
         FILTER (?lat < {0} && ?long > {1} && ?lat > {2} && ?long < {3})
     }}
     """
