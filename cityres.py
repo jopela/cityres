@@ -18,13 +18,13 @@ def main():
             ',<east>'
             )
 
+    sparql_endpoint_default = 'http://datastore:8890/sparql'
     parser.add_argument(
             '-e',
             '--endpoint',
             help='location of the SPARQL endpoint used for the query.'\
-            'Defaults to http://192.168.1.202:8890/sparql which is the'\
-            'mtrip default rdf store.',
-            default='http://192.168.1.202:8890/sparql'
+            'Defaults to {0} which is the'\
+            'mtrip default rdf store.'.format(sparql_endpoint_default),
             )
 
     parser.add_argument(
@@ -121,11 +121,11 @@ def choose_best(city, uris):
 
     return result
 
-
 def uri(search,endpoint):
     """
     Run a query to extract a location that lies within the given bounding
-    box."""
+    box.
+    """
 
     query_instance = query_string(search)
 
