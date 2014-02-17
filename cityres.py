@@ -25,6 +25,7 @@ def main():
             help='location of the SPARQL endpoint used for the query.'\
             'Defaults to {0} which is the'\
             'mtrip default rdf store.'.format(sparql_endpoint_default),
+            default = sparql_endpoint_default
             )
 
     parser.add_argument(
