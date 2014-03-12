@@ -6,8 +6,9 @@ import sys
 import strdist
 import pylev
 
-def main():
+from cityinfo import filecityinfo
 
+def main():
 
     parser = argparse.ArgumentParser(description='return a dbpedia uri'\
             ' given a search string that contains a cityname and bounding box')
@@ -60,6 +61,16 @@ def main():
     print(resource)
 
     return
+
+def filecityres(filename, endpoint):
+    """
+    Return the single best city resource match found in the
+    http://dbpedia.org/ graph based on a city guide filename.
+    """
+
+    search = filecityinfo(filename)
+    res = cityres(search, endpoint)
+    return res
 
 def cityres(search, endpoint):
     """ return the single best city resource match found in the
