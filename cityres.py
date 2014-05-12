@@ -77,7 +77,7 @@ def cityres(search, endpoint):
     http://dbpedia.org/ graph based on geolocation and city name. If no
     uri resource is found, will return none."""
 
-    possible_uris = uri(search, endpoint)
+    possible_uris = uri(search, endpoint) or special_cases(search)
     if len(possible_uris) == 0:
         return None
 
@@ -85,6 +85,27 @@ def cityres(search, endpoint):
     choosen = choose_best(city, possible_uris)
 
     return choosen
+
+def special_cases(search):
+    """
+    return special hardcoded uri for typical searches.
+    """
+
+    if search == 'Byron Bay;-28.6146006,153.56699,-28.6791425,153.6380002':
+        return ['"http://dbpedia.org/Byron_Bay,_New_South_Wales"']
+    elif search == 'Cape Town;-33.87707901,18.35102081,-34.126091,18.62934303':
+        return ['"http://dbpedia.org/Cape_town"']
+    elif search == 'Noosa;-26.3765921,153.0343404,-26.5340226,153.1197593':
+        return ['"http://dbpedia.org/Noosa"']
+    elif search == 'Taormina;37.8654516,15.2760182,37.8443377,15.2983239':
+        return ['"http://dbpedia.org/Taormina"']
+    elif search == 'Málaga;36.7575526,-4.52108288,36.59741592,-4.3394965':
+        return ['"http://dbpedia.org/Malaga"']
+    elif search == 'Nerja;36.7681638,-3.887332,36.7413336,-3.8608235':
+        return ['"http://dbpedia.org/Nerja"']
+    else:
+        return []
+
 
 def choose_best(city, uris):
     """
