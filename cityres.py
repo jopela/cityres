@@ -107,6 +107,8 @@ def special_cases(search):
         return ['"http://dbpedia.org/resource/George_Town%2C_Cayman_Islands"']
     elif search == 'Bermuda;32.5913693,-65.1232222,32.0469651,-64.4109842':
         return ['"http://dbpedia.org/resource/Bermuda"']
+    elif search == 'Kihei;21.03732743,-156.69580587,20.57647033,-155.96933492':
+        return ['"http://dbpedia.org/resource/Kihei%2C_Hawaii"']
     else:
         return []
 
