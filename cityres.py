@@ -116,7 +116,7 @@ def special_cases(search):
     elif search == 'Saint Louis;38.80049515,-90.47887421,38.52383041,-90.1752222':
         return ['"http://dbpedia.org/resource/St._Louis"']
     elif search == 'Salt Lake City;40.8529699,-112.101512,40.700246,-111.7394581':
-        return ['"http://dbpedia.org/resource/Salt_lake_city"']
+        return ['"http://dbpedia.org/resource/Salt_Lake_City"']
     elif search == 'Sofia;42.8964646,23.051092,42.4123617,23.6787158':
         return ['"http://dbpedia.org/resource/Sofia"']
     else:
