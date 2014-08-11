@@ -113,6 +113,8 @@ def special_cases(search):
         return ['"http://dbpedia.org/resource/Kenya"']
     elif search == 'Bali;-8.04968577,114.3502976,-8.85186802,115.76261798':
         return ['"http://dbpedia.org/resource/Bali"']
+    elif search == 'Saint Louis;38.80049515,-90.47887421,38.52383041,-90.1752222':
+        return ['"http://dbpedia.org/resource/St._Louis"']
     else:
         return []
 
